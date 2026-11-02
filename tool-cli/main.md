@@ -9,11 +9,13 @@ Il **Linux SysAdmin CLI Tool** è un'applicazione da riga di comando scritta in 
 ```text
 .
 ├── librerie/
+│   ├── generatore_password.h # Modulo per la generazione automatica di password sicure
 │   ├── gestore_dischi.h      # Modulo per l'ispezione e formattazione dischi
 │   ├── gestore_pacchetti.h   # Modulo per la gestione dei pacchetti (multi-distro)
 │   ├── menu_firewall.h       # Modulo per la gestione di UFW
 │   ├── menu_principale.h     # Modulo per la generazione del menu di primo livello
-│   └── menu_utenti.h         # Modulo per la gestione di utenti, gruppi e permessi
+│   ├── menu_utenti.h         # Modulo per la gestione di utenti, gruppi e permessi
+│   └── stato_rete.h          # Modulo per l'ispezione dello stato e delle interfacce di rete
 ├── test/
 │   └── main_prova.cpp        # Sandbox per test e sviluppo modulare
 ├── menu.h                    # Libreria base per l'interfaccia a menu
@@ -28,7 +30,7 @@ Per l'incapsulamento e la gestione dei dati tra i moduli vengono utilizzate due 
 
 ### `comandi_linux`
 
-Gestisce le informazioni relative agli utenti, ai permessi e all'esecuzione dei comandi di sistema.
+Gestisce le informazioni relative agli utenti, ai permessi, alle credenziali e all'esecuzione dei comandi di sistema.
 
 ```cpp
 struct comandi_linux {
@@ -59,18 +61,20 @@ struct Firewall {
 
 Definisce la struttura e le voci del menu di navigazione principale.
 
-* **Voci del menu:**
+- **Voci del menu:**
   1. `Tool utenti`
   2. `Impostazioni Firewall`
   3. `Gestione Pacchetti`
   4. `Gestione Dischi`
-  5. `Esci`
+  5. `Stato Rete`
+  6. `Generatore Password`
+  7. `Esci`
 
 ### `librerie/menu_utenti.h` (`gestisciMenuUtenti`)
 
 Incapsula tutta la logica interattiva per la gestione degli utenti e del file system.
 
-* **Funzionalità:**
+- **Funzionalità:**
   * Creazione utente (`sudo adduser`)
   * Modifica password (`sudo passwd`)
   * Modifica permessi file/cartelle (`chmod`)
@@ -82,7 +86,7 @@ Incapsula tutta la logica interattiva per la gestione degli utenti e del file sy
 
 Gestisce la sicurezza di rete interagendo con **UFW** (Uncomplicated Firewall).
 
-* **Funzionalità:**
+- **Funzionalità:**
   * Apertura porte specificando il protocollo (`sudo ufw allow <port>/<proto>`)
   * Visualizzazione dello stato attuale e delle porte aperte (`sudo ufw status`)
 
@@ -90,7 +94,7 @@ Gestisce la sicurezza di rete interagendo con **UFW** (Uncomplicated Firewall).
 
 Modulo universale multi-distro. Rileva automaticamente il package manager installato nel sistema (`apt`, `dnf`, `pacman`, `zypper`) ed esegue i comandi adattando i flag nativi.
 
-* **Funzionalità:**
+- **Funzionalità:**
   * Installazione pacchetti
   * Rimozione pacchetti
   * Reinstallazione forzata pacchetti
@@ -100,9 +104,25 @@ Modulo universale multi-distro. Rileva automaticamente il package manager instal
 
 Modulo per la gestione dell'hardware di archiviazione e delle partizioni.
 
-* **Funzionalità:**
+- **Funzionalità:**
   * Visualizzazione dischi e partizioni con `lsblk`
   * Smontaggio automatico ed esecuzione della formattazione con supporto a filesystem `ext4`, `ntfs`, `vfat` e `exfat`
+
+### `librerie/stato_rete.h` (`GestisciMenuStatoRete`)
+
+Modulo dedicato all'ispezione e al controllo della connettività e delle schede di rete.
+
+- **Funzionalità:**
+  * Visualizzazione dello stato generale della rete (`ifconfig`)
+  * Elenco delle interfacce di rete e relativi indirizzi IP (`ip addr show`)
+
+### `librerie/generatore_password.h` (`GeneratorePassword`)
+
+Modulo per la generazione sicura di password ad alta entropia.
+
+- **Funzionalità:**
+  * Generazione di stringhe casuali di 12 caratteri (lettere maiuscole/minuscole, numeri e simboli speciali) tramite `<random>` (`std::mt19937` e `std::random_device`)
+  * Memorizzazione della password generata nella struttura globale `comandi_linux::passwordUtente`
 
 ## 5. Compilazione ed Esecuzione
 
