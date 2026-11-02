@@ -4,7 +4,8 @@
 using namespace std;
 
 // 1. Strutture dati
-struct comandi_linux {
+struct comandi_linux
+{
   std::string nomeUtente = "";
   std::string passwordUtente = "";
   std::string nomeGruppo = "";
@@ -12,7 +13,8 @@ struct comandi_linux {
   std::string comandoSistema = "";
 };
 
-struct Firewall {
+struct Firewall
+{
   int PORT = 0;
   std::string PROTOCOLLO = "";
 };
@@ -23,35 +25,58 @@ struct Firewall {
 #include "./librerie/menu_firewall.h"
 #include "./librerie/menu_principale.h"
 #include "./librerie/menu_utenti.h"
+#include "./librerie/stato_rete.h"
+#include "./librerie/generatore_password.h"
 
-int main() {
+int main()
+{
   comandi_linux CL;
   Firewall FW;
 
   Menu menuPrincipale = creaMenuPrincipale();
   bool inEsecuzione = true;
 
-  while (inEsecuzione) {
+  while (inEsecuzione)
+  {
     int scelta = menuPrincipale.esegui();
 
-    switch (scelta) {
-    case 0: {
+    switch (scelta)
+    {
+    case 0:
+    {
       gestisciMenuUtenti(CL);
       break;
     }
-    case 1: {
+    case 1:
+    {
       gestisciMenuFirewall(CL, FW);
       break;
     }
-    case 2: {
+    case 2:
+    {
       GestorePacchetti::esegui();
       break;
     }
-    case 3: {
+    case 3:
+    {
       GestoreDischi::esegui();
       break;
     }
-    case 4: {
+
+    case 4:
+    {
+      GestisciMenuStatoRete(CL);
+      break;
+    }
+
+    case 5:
+    {
+      GeneratorePassword(CL);
+      break;
+    }
+
+    case 6:
+    {
       cout << "Uscita dal programma in corso...\n";
       inEsecuzione = false;
       break;

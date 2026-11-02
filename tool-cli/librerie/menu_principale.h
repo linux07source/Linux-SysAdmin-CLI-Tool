@@ -5,13 +5,16 @@
 #include <vector>
 #include <string>
 
-inline Menu creaMenuPrincipale() {
+inline Menu creaMenuPrincipale()
+{
     std::vector<std::string> voci = {
-        "Tool utenti", 
-        "Impostazioni Firewall", 
+        "Tool utenti",
+        "Impostazioni Firewall",
         "Gestione Pacchetti",
-        "Esci"
-    };
+        "Gestione Dischi",
+        "Stato Rete", // <--- Nuova voce aggiunta!
+        "Genera Password",
+        "Esci"};
     return Menu("Tools utility", voci);
 }
 
