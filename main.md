@@ -124,23 +124,7 @@ Modulo per la generazione sicura di password ad alta entropia.
   * Generazione di stringhe casuali di 12 caratteri (lettere maiuscole/minuscole, numeri e simboli speciali) tramite `<random>` (`std::mt19937` e `std::random_device`)
   * Memorizzazione della password generata nella struttura globale `comandi_linux::passwordUtente`
 
-## 5. Compilazione ed Esecuzione
-
-### Compilazione del sorgente in `test/`
-
-Se si compila dalla cartella radice del progetto:
-
-```bash
-g++ -I. test/main_prova.cpp -o apptools && ./apptools
-```
-
-### Compilazione del sorgente di produzione (`main.cpp`)
-
-```bash
-g++ main.cpp -o apptools && ./apptools
-```
-
-> **Risoluzione errori carattere non valido (NBSP):** Se si presentano errori di tipo `extended character \xA0 is not valid in an identifier`, ripulire il sorgente tramite:
+Se si presentano errori di tipo `extended character \xA0 is not valid in an identifier`, ripulire il sorgente tramite:
 > ```bash
 > sed -i 's/\xA0/ /g' test/main_prova.cpp
 > ```
