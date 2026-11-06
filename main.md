@@ -2,129 +2,32 @@
 
 ## 1. Descrizione del Progetto
 
-Il **Linux SysAdmin CLI Tool** è un'applicazione da riga di comando scritta in C++20 sviluppata per semplificare le operazioni fondamentali di amministrazione di sistema su distribuzioni Linux. Il progetto adotta un'architettura **modulare header-only**, separando la logica di ciascun ambito operativo in librerie dedicate all'interno della cartella `librerie/`.
+Il **Linux SysAdmin CLI Tool** (progettato in stile *Lubuntu Swag Style*) è un'applicazione da riga di comando scritta in C++20 sviluppata per semplificare e centralizzare le operazioni fondamentali di amministrazione di sistema su distribuzioni Linux. 
 
-## 2. Struttura del Progetto
+Il progetto adotta un'architettura **modulare header-only** combinata con un motore di autenticazione e persistenza dati basato su **SQLite3**. Il sistema distingue i privilegi tra utenti standard e l'utente amministratore **`root`**, garantendo sicurezza, isolamento dei dati ed esecuzione controllata dei comandi di sistema.
+
+---
+
+## 2. Struttura del Repository e dell'Architettura
 
 ```text
 .
+├── database/
+│   └── login.db              # Database SQLite locale (Generato automaticamente al primo avvio, ignorato da Git)
 ├── librerie/
-│   ├── generatore_password.h # Modulo per la generazione automatica di password sicure
-│   ├── gestore_dischi.h      # Modulo per l'ispezione e formattazione dischi
-│   ├── gestore_pacchetti.h   # Modulo per la gestione dei pacchetti (multi-distro)
-│   ├── menu_firewall.h       # Modulo per la gestione di UFW
-│   ├── menu_principale.h     # Modulo per la generazione del menu di primo livello
-│   ├── menu_utenti.h         # Modulo per la gestione di utenti, gruppi e permessi
-│   └── stato_rete.h          # Modulo per l'ispezione dello stato e delle interfacce di rete
+│   ├── generatore_password.h # Modulo per la generazione automatica di password ad alta entropia
+│   ├── gestore_dischi.h      # Modulo per l'ispezione e la formattazione avanzata dei dischi (lsblk, mkfs)
+│   ├── gestore_pacchetti.h   # Modulo universale per la gestione pacchetti (apt, dnf, pacman, zypper)
+│   ├── menu_firewall.h       # Modulo per la configurazione e il monitoraggio di UFW
+│   ├── menu_principale.h     # Menu di navigazione di primo livello per gli utenti standard
+│   ├── menu_principale_root.h # Menu riservato all'amministratore (include modulo gestione utenti DB)
+│   ├── menu_utenti.h         # Modulo per la gestione utenti di sistema Linux, gruppi e chmod
+│   └── stato_rete.h          # Modulo per l'ispezione di schede e interfacce di rete (ip, ifconfig)
 ├── test/
-│   └── main_prova.cpp        # Sandbox per test e sviluppo modulare
-├── menu.h                    # Libreria base per l'interfaccia a menu
-├── titoli.h                  # Modulo per stili grafici e formattazione ANSI
-├── main.cpp                  # Entry point del programma in produzione
-└── README.md                 # Documentazione repository GitHub
-```
-
-## 3. Architettura e Strutture Dati
-
-Per l'incapsulamento e la gestione dei dati tra i moduli vengono utilizzate due strutture principali:
-
-### `comandi_linux`
-
-Gestisce le informazioni relative agli utenti, ai permessi, alle credenziali e all'esecuzione dei comandi di sistema.
-
-```cpp
-struct comandi_linux {
-    std::string nomeUtente = "";
-    std::string passwordUtente = "";
-    std::string nomeGruppo = "";
-    std::string targetFile = "";
-    std::string comandoSistema = "";
-};
-```
-
-### `Firewall`
-
-Contiene la configurazione per l'apertura o la chiusura delle porte di rete.
-
-```cpp
-struct Firewall {
-    int PORT = 0;
-    std::string PROTOCOLLO = "";
-};
-```
-
-> **Nota di compilazione:** Assicurarsi sempre che le strutture `comandi_linux` e `Firewall` vengano dichiarate **prima** di includere gli header dei menu per evitare errori di scope (`not declared in this scope`).
-
-## 4. Moduli e Librerie
-
-### `librerie/menu_principale.h`
-
-Definisce la struttura e le voci del menu di navigazione principale.
-
-- **Voci del menu:**
-  1. `Tool utenti`
-  2. `Impostazioni Firewall`
-  3. `Gestione Pacchetti`
-  4. `Gestione Dischi`
-  5. `Stato Rete`
-  6. `Generatore Password`
-  7. `Esci`
-
-### `librerie/menu_utenti.h` (`gestisciMenuUtenti`)
-
-Incapsula tutta la logica interattiva per la gestione degli utenti e del file system.
-
-- **Funzionalità:**
-  * Creazione utente (`sudo adduser`)
-  * Modifica password (`sudo passwd`)
-  * Modifica permessi file/cartelle (`chmod`)
-  * Assegnazione gruppi (`sudo usermod -aG`)
-  * Elenco utenti registrati (`/etc/passwd`)
-  * Eliminazione utente con rimozione home (`sudo userdel -r`)
-
-### `librerie/menu_firewall.h` (`gestisciMenuFirewall`)
-
-Gestisce la sicurezza di rete interagendo con **UFW** (Uncomplicated Firewall).
-
-- **Funzionalità:**
-  * Apertura porte specificando il protocollo (`sudo ufw allow <port>/<proto>`)
-  * Visualizzazione dello stato attuale e delle porte aperte (`sudo ufw status`)
-
-### `librerie/gestore_pacchetti.h` (`GestorePacchetti`)
-
-Modulo universale multi-distro. Rileva automaticamente il package manager installato nel sistema (`apt`, `dnf`, `pacman`, `zypper`) ed esegue i comandi adattando i flag nativi.
-
-- **Funzionalità:**
-  * Installazione pacchetti
-  * Rimozione pacchetti
-  * Reinstallazione forzata pacchetti
-  * Aggiornamento completo del sistema
-
-### `librerie/gestore_dischi.h` (`GestoreDischi`)
-
-Modulo per la gestione dell'hardware di archiviazione e delle partizioni.
-
-- **Funzionalità:**
-  * Visualizzazione dischi e partizioni con `lsblk`
-  * Smontaggio automatico ed esecuzione della formattazione con supporto a filesystem `ext4`, `ntfs`, `vfat` e `exfat`
-
-### `librerie/stato_rete.h` (`GestisciMenuStatoRete`)
-
-Modulo dedicato all'ispezione e al controllo della connettività e delle schede di rete.
-
-- **Funzionalità:**
-  * Visualizzazione dello stato generale della rete (`ifconfig`)
-  * Elenco delle interfacce di rete e relativi indirizzi IP (`ip addr show`)
-
-### `librerie/generatore_password.h` (`GeneratorePassword`)
-
-Modulo per la generazione sicura di password ad alta entropia.
-
-- **Funzionalità:**
-  * Generazione di stringhe casuali di 12 caratteri (lettere maiuscole/minuscole, numeri e simboli speciali) tramite `<random>` (`std::mt19937` e `std::random_device`)
-  * Memorizzazione della password generata nella struttura globale `comandi_linux::passwordUtente`
-
-Se si presentano errori di tipo `extended character \xA0 is not valid in an identifier`, ripulire il sorgente tramite:
-> ```bash
-> sed -i 's/\xA0/ /g' test/main_prova.cpp
-> ```
+│   └── main_prova.cpp        # Sandbox per test unitari e sviluppo modulare
+├── Database.hpp              # Wrapper C++ OOP per l'interazione con SQLite3 tramite Prepared Statements
+├── menu.h                    # Componente base per la rendering e selezione dei menu CLI
+├── titoli.h                  # Helper per la formattazione grafica ANSI ed effetti terminale
+├── main.cpp                  # Entry point del programma con gestione sessioni e flussi di autenticazione
+├── .gitignore                # Regole di esclusione per file locali e database (.db)
+└── README.md                 # Guida introduttiva e documentazione per la repository GitHub
