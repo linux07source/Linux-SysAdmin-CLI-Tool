@@ -2,7 +2,7 @@
 
 ## 1. Descrizione del Progetto
 
-Il **Linux SysAdmin CLI Tool** (progettato in stile *Lubuntu Swag Style*) è un'applicazione da riga di comando scritta in C++20 sviluppata per semplificare e centralizzare le operazioni fondamentali di amministrazione di sistema su distribuzioni Linux. 
+Il **Linux SysAdmin CLI Tool** è un'applicazione da riga di comando scritta in C++20 sviluppata per semplificare e centralizzare le operazioni fondamentali di amministrazione di sistema su distribuzioni Linux. 
 
 Il progetto adotta un'architettura **modulare header-only** combinata con un motore di autenticazione e persistenza dati basato su **SQLite3**. Il sistema distingue i privilegi tra utenti standard e l'utente amministratore **`root`**, garantendo sicurezza, isolamento dei dati ed esecuzione controllata dei comandi di sistema.
 
